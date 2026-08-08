@@ -330,3 +330,6 @@ MEMORY/
 
 # Maestro artifacts
 .maestro
+
+# CodeGraph database directory
+.codegraph
