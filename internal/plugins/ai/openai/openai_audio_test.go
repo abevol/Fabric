@@ -23,7 +23,7 @@ func TestTranscribeFile_ValidationErrorsAreLocalized(t *testing.T) {
 	require.NoError(t, audioFile.Close())
 	t.Cleanup(func() { _ = os.Remove(audioFile.Name()) })
 
-	_, err = client.TranscribeFile(context.Background(), audioFile.Name(), "not-a-model", false)
+	_, err = client.TranscribeFile(context.Background(), audioFile.Name(), "not-a-model", false, "")
 	require.Error(t, err)
 	assert.Equal(t,
 		fmt.Sprintf(i18n.T("openai_audio_model_not_supported_for_transcription"), "not-a-model"),
@@ -35,7 +35,7 @@ func TestTranscribeFile_ValidationErrorsAreLocalized(t *testing.T) {
 	require.NoError(t, unsupportedFile.Close())
 	t.Cleanup(func() { _ = os.Remove(unsupportedFile.Name()) })
 
-	_, err = client.TranscribeFile(context.Background(), unsupportedFile.Name(), AllowedTranscriptionModels[0], false)
+	_, err = client.TranscribeFile(context.Background(), unsupportedFile.Name(), AllowedTranscriptionModels[0], false, "")
 	require.Error(t, err)
 	assert.Equal(t,
 		fmt.Sprintf(i18n.T("openai_audio_unsupported_audio_format"), filepath.Ext(unsupportedFile.Name())),
@@ -55,7 +55,7 @@ func TestTranscribeFile_FileSizeLimitErrorIsLocalized(t *testing.T) {
 	require.NoError(t, largeFile.Truncate(MaxAudioFileSize+1))
 	require.NoError(t, largeFile.Close())
 
-	_, err = client.TranscribeFile(context.Background(), largeFile.Name(), AllowedTranscriptionModels[0], false)
+	_, err = client.TranscribeFile(context.Background(), largeFile.Name(), AllowedTranscriptionModels[0], false, "")
 	require.Error(t, err)
 	assert.Equal(t,
 		fmt.Sprintf(i18n.T("openai_audio_file_exceeds_limit_enable_split"), largeFile.Name()),

@@ -49,12 +49,20 @@ var allowedAudioExtensions = map[string]struct{}{
 
 // TranscribeFile transcribes the given audio file using the specified model. If the file
 // exceeds the size limit, it can optionally be split into chunks using ffmpeg.
-func (o *Client) TranscribeFile(ctx context.Context, filePath, model string, split bool) (string, error) {
+func (o *Client) TranscribeFile(ctx context.Context, filePath, model string, split bool, language string) (string, error) {
+	return TranscribeAudioFile(ctx, o.ApiClient, filePath, model, split, language, AllowedTranscriptionModels)
+}
+
+// TranscribeAudioFile transcribes the given audio file using the provided OpenAI-compatible
+// client and model. It is shared between the OpenAI plugin and OpenAI-compatible providers
+// (e.g. SiliconCloud with SenseVoiceSmall). The allowedModels list restricts which models may
+// be used; pass nil to accept any model name.
+func TranscribeAudioFile(ctx context.Context, client *openai.Client, filePath, model string, split bool, language string, allowedModels []string) (string, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
-	if !slices.Contains(AllowedTranscriptionModels, model) {
+	if allowedModels != nil && !slices.Contains(allowedModels, model) {
 		return "", fmt.Errorf("%s", fmt.Sprintf(i18n.T("openai_audio_model_not_supported_for_transcription"), model))
 	}
 
@@ -103,7 +111,10 @@ func (o *Client) TranscribeFile(ctx context.Context, filePath, model string, spl
 				File:  chunk,
 				Model: openai.AudioModel(model),
 			}
-			resp, transcribeErr := o.ApiClient.Audio.Transcriptions.New(ctx, params)
+			if language != "" {
+				params.Language = openai.String(language)
+			}
+			resp, transcribeErr := client.Audio.Transcriptions.New(ctx, params)
 			if transcribeErr != nil {
 				resultsChan <- transcriptionResult{index: index, err: transcribeErr}
 				return

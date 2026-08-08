@@ -10,7 +10,7 @@ import (
 )
 
 type transcriber interface {
-	TranscribeFile(ctx context.Context, filePath, model string, split bool) (string, error)
+	TranscribeFile(ctx context.Context, filePath, model string, split bool, language string) (string, error)
 }
 
 func handleTranscription(flags *Flags, registry *core.PluginRegistry) (message string, err error) {
@@ -31,7 +31,7 @@ func handleTranscription(flags *Flags, registry *core.PluginRegistry) (message s
 	if model == "" {
 		return "", errors.New(i18n.T("transcription_model_required"))
 	}
-	if message, err = tr.TranscribeFile(context.Background(), flags.TranscribeFile, model, flags.SplitMediaFile); err != nil {
+	if message, err = tr.TranscribeFile(context.Background(), flags.TranscribeFile, model, flags.SplitMediaFile, flags.TranscribeLanguage); err != nil {
 		return
 	}
 	return

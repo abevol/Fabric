@@ -102,6 +102,7 @@ type Flags struct {
 	DisableResponsesAPI             bool                 `long:"disable-responses-api" yaml:"disableResponsesAPI" description:"Disable OpenAI Responses API (default: false)"`
 	TranscribeFile                  string               `long:"transcribe-file" yaml:"transcribeFile" description:"Audio or video file to transcribe"`
 	TranscribeModel                 string               `long:"transcribe-model" yaml:"transcribeModel" description:"Model to use for transcription (separate from chat model)"`
+	TranscribeLanguage              string               `long:"transcribe-language" yaml:"transcribeLanguage" description:"Language code for transcription (e.g. zh, en; supported by SenseVoiceSmall)"`
 	SplitMediaFile                  bool                 `long:"split-media-file" yaml:"splitMediaFile" description:"Split audio/video files larger than 25MB using ffmpeg"`
 	Voice                           string               `long:"voice" yaml:"voice" description:"TTS voice name for supported models (e.g., Kore, Charon, Puck)" default:"Kore"`
 	ListGeminiVoices                bool                 `long:"list-gemini-voices" description:"List all available Gemini TTS voices"`
